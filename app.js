@@ -65,6 +65,42 @@ const UICtrl = (() => {
 				description: document.querySelector(DOMStrings.inputDescption).value,
 				value: document.querySelector(DOMStrings.inputValue).value,
 			}
+		},
+		addListItem(obj, type) {
+			// Create HTML string with placeholder text
+			let html, element;
+
+			if (type === 'inc') {
+				element = document.querySelector('.income__list');
+				html = `<div class="item clearfix" id="income-%id%">
+					<div class="item__description">%description%</div>
+					<div class="right clearfix">
+							<div class="item__value">%value%</div>
+							<div class="item__delete">
+									<button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
+							</div>
+					</div>
+			</div>`;
+			} else if (type === 'exp') {
+				element = document.querySelector('.expenses__list');
+				html = `<div class="item clearfix" id="income-%id%">
+						<div class="item__description">%description%</div>
+						<div class="right clearfix">
+								<div class="item__value">%value%</div>
+								<div class="item__delete">
+										<button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
+								</div>
+						</div>
+				</div>`;
+			}
+
+			// Replace the placeholder text with some actual data
+			let newHtml = html.replace('%id%', obj.id);
+			newHtml = newHtml.replace('%description%', obj.description);
+			newHtml = newHtml.replace('%value%', obj.value);
+
+			// Insert HTML into the DOM
+			element.insertAdjacentHTML('beforeend', newHtml);
 		}
 	};
 
@@ -73,14 +109,14 @@ const UICtrl = (() => {
 const controller = ((model, UI) => {
 	console.log('Controller');
 
-	
+
 	const setupEventListeners = () => {
 		const DOM = UI.getDOMStrings();
 
 		document.querySelector(DOM.addBtn).addEventListener('click', ctrlAddItem);
 
 		document.addEventListener('keypress', function (e) {
-	
+
 			if (e.keyCode === 13 || e.which === 13) {
 				ctrlAddItem(e);
 			}
@@ -92,9 +128,10 @@ const controller = ((model, UI) => {
 		const input = UI.getInput();
 
 		// 2. Add the item to the Model
-		model.addItem(input.type, input.description, input.value);
+		const newItem = model.addItem(input.type, input.description, input.value);
 
 		// 3. Add the item to the UICtrl
+		UI.addListItem(newItem, input.type);
 
 		// 4. Calculate the budgetCtrl
 
